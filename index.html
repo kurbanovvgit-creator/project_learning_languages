@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Официальный портал</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+        }
+        header {
+            background-color: #006400;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        nav {
+            background-color: #004d00;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        nav a:hover {
+            transform: scale(1.1);
+        }
+        .language-switcher {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .language-switcher select {
+            padding: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .learn-button {
+            background-color: #ffffff;
+            color: #006400;
+            border: 1px solid #006400;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+        }
+        .learn-button:hover {
+            background-color: #006400;
+            color: white;
+            transform: scale(1.05);
+        }
+        .sub-buttons {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 10px;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .sub-buttons.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .sub-buttons a {
+            background-color: #f9f9f9;
+            color: #006400;
+            border: 1px solid #006400;
+            padding: 8px;
+            margin: 5px 0;
+            width: 150px;
+            text-align: left;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: transform 0.2s ease, background-color 0.2s;
+        }
+        .sub-buttons a:hover {
+            background-color: #006400;
+            color: white;
+            transform: translateX(5px);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .news-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .news-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 0.5s ease forwards;
+            animation-delay: calc(0.1s * var(--index));
+        }
+        .news-card:nth-child(1) { --index: 1; }
+        .news-card:nth-child(2) { --index: 2; }
+        .news-card:nth-child(3) { --index: 3; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+        .news-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #006400, #004d00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .news-card h3 {
+            margin: 10px;
+            font-size: 18px;
+        }
+        .news-card p {
+            margin: 0 10px 10px;
+            color: #555;
+        }
+        .news-card a {
+            display: block;
+            margin: 10px;
+            color: #006400;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .news-card a:hover {
+            text-decoration: underline;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            width: 90%;
+            padding: 20px;
+            border-radius: 5px;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.8);
+            animation: modalOpen 0.3s ease forwards;
+        }
+        @keyframes modalOpen {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-content h2 {
+            margin: 0 0 10px;
+            font-size: 22px;
+        }
+        .modal-content p {
+            margin: 0 0 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #006400;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .close-button:hover {
+            background: #004d00;
+        }
+        footer {
+            background-color: #006400;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            opacity: 0;
+            animation: fadeInFooter 1s ease forwards;
+            animation-delay: 1s;
+        }
+        @keyframes fadeInFooter {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="site-title">Международные новости</h1>
+    </header>
+    <nav>
+        <a href="index.html" data-key="nav-home">Главная</a>
+        <a href="habarlar.html" data-key="nav-news">Новости</a>
+        <a href="hokumet.html" data-key="nav-about">О стране</a>
+        <!-- <a href="#government" data-key="nav-government">Правительство</a> -->
+        <a href="olimp.html" data-key="nav-olympiads">Олимпиады</a>
+        <div class="language-switcher">
+            <button class="learn-button" id="learn-button" data-key="learn-button" onclick="toggleSubButtons()">научиться</button>
+            <select id="language-select" onchange="changeLanguage()">
+                <option value="ru">Русский</option>
+                <option value="tk">Türkmen</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <div class="sub-buttons" id="sub-buttons">
+            <a href="audiotoText.html" data-key="sub-button1">Аудио в Текст</a>
+            <a href="Duo.html" data-key="sub-button2">Научится английскому</a>
+            <a href="ObjectName.html" data-key="sub-button3">Узнай имя обьекта</a>
+            <a href="SpeechCheker.html" data-key="sub-button4">Орфоэпия</a>
+            <a href="speech.html" data-key="sub-button5">Офография</a>
+        </div>
+    </nav>
+    <div class="container">
+        <section class="news-section">
+            <div class="news-card">
+                <div class="news-placeholder">1</div>
+                <h3 data-key="news1-title">Международный форум по устойчивому развитию</h3>
+                <p data-key="news1-text">В столице прошел форум, посвященный вопросам экологии и устойчивого развития...</p>
+                <a data-key="read-more" onclick="openModal('news1')">Читать далее</a>
+            </div>
+            <div class="news-card">
+                <div class="news-placeholder">2</div>
+                <h3 data-key="news2-title">Визит иностранной делегации</h3>
+                <p data-key="news2-text">Президент принял делегацию для обсуждения торгово-экономического сотрудничества...</p>
+                <a data-key="read-more" onclick="openModal('news2')">Читать далее</a>
+            </div>
+            <div class="news-card">
+                <div class="news-placeholder">3</div>
+                <h3 data-key="news3-title">Культурный фестиваль 2025</h3>
+                <p data-key="news3-text">В городе стартовал ежегодный фестиваль национальной культуры...</p>
+                <a data-key="read-more" onclick="openModal('news3')">Читать далее</a>
+            </div>
+        </section>
+    </div>
+    <div id="news1-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal('news1')">Закрыть</button>
+            <h2 data-key="news1-title">Международный форум по устойчивому развитию</h2>
+            <p data-key="news1-full-text">В столице прошел международный форум, посвященный вопросам экологии и устойчивого развития. Участники обсудили ключевые направления в области защиты окружающей среды, внедрения зеленых технологий и международного сотрудничества. Форум стал важной платформой для обмена опытом и укрепления партнерских связей.</p>
+        </div>
+    </div>
+    <div id="news2-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal('news2')">Закрыть</button>
+            <h2 data-key="news2-title">Визит иностранной делегации</h2>
+            <p data-key="news2-full-text">Президент принял иностранную делегацию для обсуждения перспектив торгово-экономического сотрудничества. В ходе встречи были рассмотрены вопросы расширения инвестиций и реализации совместных проектов.</p>
+        </div>
+    </div>
+    <div id="news3-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal('news3')">Закрыть</button>
+            <h2 data-key="news3-title">Культурный фестиваль 2025</h2>
+            <p data-key="news3-full-text">В городе стартовал ежегодный фестиваль национальной культуры, в рамках которого прошли концерты, выставки и мастер-классы. Мероприятие привлекло тысячи гостей из разных регионов.</p>
+        </div>
+    </div>
+    <footer>
+        <p id="footer-text">© 2025 Официальный портал. Все права защищены.</p>
+    </footer>
+    <script>
+        const translations = {
+            ru: {
+                'site-title': 'Официальный портал государства',
+                'nav-home': 'Главная',
+                'nav-news': 'Новости',
+                'nav-about': 'О стране',
+                'nav-government': 'Правительство',
+                'nav-olympiads': 'Олимпиад',
+                'news1-title': 'Международный форум по устойчивому развитию',
+                'news1-text': 'В столице прошел форум, посвященный вопросам экологии и устойчивого развития...',
+                'news1-full-text': 'В столице прошел международный форум, посвященный вопросам экологии и устойчивого развития. Участники обсудили ключевые направления в области защиты окружающей среды, внедрения зеленых технологий и международного сотрудничества. Форум стал важной платформой для обмена опытом и укрепления партнерских связей.',
+                'news2-title': 'Визит иностранной делегации',
+                'news2-text': 'Президент принял делегацию для обсуждения торгово-экономического сотрудничества...',
+                'news2-full-text': 'Президент принял иностранную делегацию для обсуждения перспектив торгово-экономического сотрудничества. В ходе встречи были рассмотрены вопросы расширения инвестиций и реализации совместных проектов.',
+                'news3-title': 'Культурный фестиваль 2025',
+                'news3-text': 'В городе стартовал ежегодный фестиваль национальной культуры...',
+                'news3-full-text': 'В городе стартовал ежегодный фестиваль национальной культуры, в рамках которого прошли концерты, выставки и мастер-классы. Мероприятие привлекло тысячи гостей из разных регионов.',
+                'read-more': 'Читать далее',
+                'footer-text': '© 2025 Официальный портал. Все права защищены.',
+                'learn-button': 'научиться',
+                'sub-button1': 'Аудио в Текст',
+                'sub-button2': 'Научится английскому',
+                'sub-button3': 'Узнай имя обьекта',
+                'sub-button4': 'Орфоэпия',
+                'sub-button5': 'Орфография',
+            },
+            tk: {
+                'site-title': 'Döwletiň resmi portaly',
+                'nav-home': 'Baş sahypa',
+                'nav-news': 'Habarlar',
+                'nav-about': 'Ýurt hakda',
+                'nav-government': 'Hökümet',
+                'nav-olympiads': 'Olimpiadalar',
+                'news1-title': 'Dowamly ösüş boýunça halkara forum',
+                'news1-text': 'Paýtagtda ekologiýa we dowamly ösüş meselelerine bagyşlanan forum geçirildi...',
+                'news1-full-text': 'Paýtagtda ekologiýa we dowamly ösüş meselelerine bagyşlanan halkara forum geçirildi. Gatnaşyjylar daşky gurşawy goramak, ýaşyl tehnologiýalary ornaşdyrmak we halkara hyzmatdaşlyk boýunça esasy ugrlary maslahatlaşdylar. Forum tejribe alyşmak we hyzmatdaşlyk baglaryny berkitmek üçin möhüm platforma boldy.',
+                'news2-title': 'Daşary ýurt wekiliýetiniň sapary',
+                'news2-text': 'Prezident söwda-ykdysady hyzmatdaşlygy maslahatlaşmak üçin wekiliýeti kabul etdi...',
+                'news2-full-text': 'Prezident söwda-ykdysady hyzmatdaşlygyň geljegini maslahatlaşmak üçin daşary ýurt wekiliýetini kabul etdi. Duşuşykda maýa goýumlaryny giňeltmek we bilelikdäki taslamalary durmuşa geçirmek meseleleri ara alnyp maslahatlaşyldy.',
+                'news3-title': '2025 Medeni festival',
+                'news3-text': 'Şäherde her ýyl geçirilýän milli medeniýet festivaly başlandy...',
+                'news3-full-text': 'Şäherde her ýyl geçirilýän milli medeniýet festivaly başlandy, ol konsertler, sergiler we ussatlyk synaglary bilen geçirildi. Çäre dürli sebitlerden müňlerçe myhmana ýygnady.',
+                'read-more': 'Dowamyny oka',
+                'footer-text': '© 2025 Resmi portal. Ähli hukuklar goragly.',
+                'learn-button': 'owren',
+                'sub-button1': 'Sesi ýazga geçirmek',
+                'sub-button2': 'Iňlis dilini öwren',
+                'sub-button3': 'Jisimiň adyny öwren',
+                'sub-button4': 'Dogry sözlemegi öwrenmek',
+                'sub-button5': 'Orofgrafiýa',
+            },
+            en: {
+                'site-title': 'Official State Portal',
+                'nav-home': 'Home',
+                'nav-news': 'News',
+                'nav-about': 'About the Country',
+                'nav-government': 'Government',
+                'nav-olympiads': 'Olympiads',
+                'news1-title': 'International Forum on Sustainable Development',
+                'news1-text': 'A forum dedicated to ecology and sustainable development was held in the capital...',
+                'news1-full-text': 'An international forum dedicated to ecology and sustainable development was held in the capital. Participants discussed key directions in environmental protection, the implementation of green technologies, and international cooperation. The forum became an important platform for knowledge exchange and strengthening partnerships.',
+                'news2-title': 'Visit of a Foreign Delegation',
+                'news2-text': 'The President received a delegation to discuss trade and economic cooperation...',
+                'news2-full-text': 'The President received a foreign delegation to discuss prospects for trade and economic cooperation. The meeting addressed issues of expanding investments and implementing joint projects.',
+                'news3-title': 'Cultural Festival 2025',
+                'news3-text': 'The city launched the annual national culture festival...',
+                'news3-full-text': 'The city launched the annual national culture festival, which included concerts, exhibitions, and master classes. The event attracted thousands of guests from various regions.',
+                'read-more': 'Read more',
+                'footer-text': '© 2025 Official Portal. All rights reserved.',
+                'learn-button': 'learn',
+                'sub-button1': 'Audio to Text ',
+                'sub-button2': 'Learn english',
+                'sub-button3': 'Learn Object Name',
+                'sub-button4': 'Orthoepy',
+                'sub-button5': 'Spelling',
+            }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById('language-select').value;
+            document.getElementById('site-title').textContent = translations[lang]['site-title'];
+            document.getElementById('footer-text').textContent = translations[lang]['footer-text'];
+            document.getElementById('learn-button').textContent = translations[lang]['learn-button'];
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                element.textContent = translations[lang][key];
+            });
+        }
+
+        function toggleSubButtons() {
+            const subButtons = document.getElementById('sub-buttons');
+            subButtons.classList.toggle('active');
+        }
+
+        function openModal(newsId) {
+            const modal = document.getElementById(newsId + '-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(newsId) {
+            const modal = document.getElementById(newsId + '-modal');
+            modal.style.display = 'none';
+        }
+
+        // Анимация для карточек новостей
+        document.querySelectorAll('.news-card').forEach(card => {
+            card.addEventListener('mouseover', () => {
+                card.style.transform = 'translateY(-5px)';
+                card.style.transition = 'transform 0.3s ease';
+            });
+            card.addEventListener('mouseout', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Закрытие панели при клике вне её
+        document.addEventListener('click', (event) => {
+            const subButtons = document.getElementById('sub-buttons');
+            const learnButton = document.getElementById('learn-button');
+            if (!subButtons.contains(event.target) && !learnButton.contains(event.target)) {
+                subButtons.classList.remove('active');
+            }
+        });
+
+        // Закрытие модального окна при клике по фону или кнопке "Закрыть"
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('modal') || event.target.classList.contains('close-button')) {
+                const modal = event.target.closest('.modal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

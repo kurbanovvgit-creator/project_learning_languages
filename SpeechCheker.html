@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Söziň aýdylyşyny barla</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #a8e063, #56ab2f);
+      color: #fff;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+      animation: fadeInDown 1s ease;
+    }
+
+    select, button {
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    select {
+      background-color: #fff;
+      color: #333;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background-color: #388e3c;
+    }
+
+    #result {
+      margin-top: 30px;
+      font-size: 24px;
+      padding: 20px;
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.2);
+      animation: fadeIn 1s ease;
+      max-width: 80%;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Проверь произношение</h1>
+  <select id="word-select">
+    <option>hello</option>
+    <option>good morning</option>
+    <option>how are you</option>
+    <option>thank you</option>
+    <option>see you later</option>
+  </select><br>
+  <button onclick="startRecognition()">🎤 Говорить</button>
+  <div id="result"></div>
+
+  <script>
+    const resultDiv = document.getElementById("result");
+
+    function startRecognition() {
+      const target = document.getElementById("word-select").value.toLowerCase();
+      resultDiv.innerHTML = "";
+
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Ваш браузер не поддерживает распознавание речи.");
+        return;
+      }
+
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const spoken = event.results[0][0].transcript.toLowerCase();
+        const confidence = event.results[0][0].confidence;
+
+        resultDiv.style.animation = "fadeIn 0.8s ease";
+        resultDiv.innerHTML = `Siziň diýen söziňiz: <strong>${spoken}</strong><br>`;
+        resultDiv.innerHTML += `Dogrylyk: <strong>${(confidence * 100).toFixed(1)}%</strong><br><br>`;
+
+        if (spoken === target && confidence >= 0.85) {
+          resultDiv.innerHTML += "<span style='color: #00ff88;'>✅ Dogry aytdynyz!</span>";
+        } else if (spoken === target && confidence < 0.85) {
+          resultDiv.innerHTML += "<span style='color: #ffd600;'>⚠️ Menzes yone dogry dal.</span>";
+        } else {
+          resultDiv.innerHTML += "<span style='color: #ff4f4f;'>❌ Nadogry.</span>";
+        }
+      };
+
+      recognition.onerror = function(event) {
+        resultDiv.innerHTML = "Ошибка: " + event.error;
+      };
+    }
+  </script>
+</body>
+</html>

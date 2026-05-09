@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iňlis dilini öwren</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Анимация для пузырьков */
+    .bubble:hover {
+      transform: scale(1.1);
+      transition: transform 0.2s ease-in-out;
+    }
+    .bubble {
+      transition: transform 0.2s ease-in-out;
+    }
+    /* Анимация для правильного/неправильного ответа */
+    .feedback-correct {
+      animation: bounce 0.3s ease-in-out;
+    }
+    .feedback-incorrect {
+      animation: shake 0.3s ease-in-out;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    /* Плавное появление контента */
+    .content-container {
+      animation: fadeIn 0.5s ease-in;
+一個
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-green-100 to-gray-100 font-sans">
+  <div class="container mx-auto p-4">
+    <nav class="mb-4">
+      <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transform hover:scale-105 transition-transform duration-200" onclick="showLessons()">Baş sahypa</button>
+    </nav>
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-green-600 drop-shadow-md">Iňlis dilini öwren</h1>
+      <div class="flex justify-center items-center gap-4 mt-4">
+        <div class="bg-green-200 px-4 py-2 rounded-full">
+          <p class="text-lg font-semibold" id="score">Ballar: 0 XP</p>
+        </div>
+        <div class="bg-green-200 px-4 py-2 rounded-full">
+          <p class="text-lg font-semibold" id="level">Level: 1</p>
+        </div>
+        <div class="flex gap-2" id="hearts">
+          <svg class="w-6 h-6 text-green-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <svg class="w-6 h-6 text-green-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <svg class="w-6 h-6 text-green-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </div>
+      </div>
+      <div class="w-64 mx-auto mt-4">
+        <div class="bg-gray-200 h-6 rounded-full overflow-hidden shadow-inner">
+          <div id="progress-bar" class="bg-green-500 h-6 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+    </header>
+    <div id="content" class="content-container bg-white p-8 rounded-xl shadow-2xl max-w-2xl mx-auto"></div>
+  </div>
+
+  <script>
+    // Данные уроков на туркменском с разными уровнями сложности
+    const lessons = [
+      {
+        id: 1,
+        title: "Esasy salamlaşyklar",
+        levels: [
+          {
+            difficulty: "Aňsat",
+            questions: [
+              {
+                question: "Iňlis dilinde 'Salam' nähili aýdylýar?",
+                options: ["Hi", "Goodbye", "Yes", "No"],
+                correct: "Hi"
+              },
+              {
+                question: "'Good morning' näme diýmek?",
+                options: ["Gijäňiz rahat bolsun", "Ertiriňiz haýyrly bolsun", "Hoş galyň", "Hawa"],
+                correct: "Ertiriňiz haýyrly bolsun"
+              },
+              {
+                question: "Iňlis dilinde 'Hawa' nähili aýdylýar?",
+                options: ["Yes", "No", "Maybe", "Please"],
+                correct: "Yes"
+              },
+              {
+                question: "'Goodbye' näme diýmek?",
+                options: ["Salam", "Hoş gal", "Sag bol", "Hawa"],
+                correct: "Hoş gal"
+              }
+            ]
+          },
+          {
+            difficulty: "Orta",
+            questions: [
+              {
+                question: "'Hello, how are you?' näme diýmek?",
+                options: ["Salam, näme edýärsiň?", "Salam, nähili?", "Hoş gal", "Sag bol"],
+                correct: "Salam, nähili?"
+              },
+              {
+                question: "'Good afternoon' nähili terjime edilýär?",
+                options: ["Gündiziňiz haýyrly bolsun", "Agşamyňyz haýyrly bolsun", "Ertiriňiz haýyrly bolsun", "Hawa"],
+                correct: "Gündiziňiz haýyrly bolsun"
+              },
+              {
+                question: "'Nice to see you' näme diýmek?",
+                options: ["Seni görmek gowy", "Sag bol", "Hoş gal", "Haýyş"],
+                correct: "Seni görmek gowy"
+              }
+            ]
+          },
+          {
+            difficulty: "Kyn",
+            questions: [
+              {
+                question: "'Good evening, nice to meet you' nähili terjime edilýär?",
+                options: ["Agşamyňyz haýyrly bolsun, tanyşanymyz gowy", "Ertiriňiz haýyrly bolsun", "Sag boluň", "Hawa"],
+                correct: "Agşamyňyz haýyrly bolsun, tanyşanymyz gowy"
+              },
+              {
+                question: "'How do you say goodbye in English?' näme diýmek?",
+                options: ["Iňlis dilinde hoşlaşmak nähili aýdylýar?", "Salam nähili aýdylýar?", "Sag bol nähili aýdylýar?", "Hawa"],
+                correct: "Iňlis dilinde hoşlaşmak nähili aýdylýar?"
+              },
+              {
+                question: "'Pleased to make your acquaintance' näme diýmek?",
+                options: ["Siziň bilen tanyşanym gowy", "Sag boluň", "Hoş galyň", "Ertiriňiz haýyrly bolsun"],
+                correct: "Siziň bilen tanyšanym gowy"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "Köplenç ulanylýan sözlemler",
+        levels: [
+          {
+            difficulty: "Aňsat",
+            questions: [
+              {
+                question: "'Thank you' näme diýmek?",
+                options: ["Hawa", "Sag bol", "Salam", "Hoş gal"],
+                correct: "Sag bol"
+              },
+              {
+                question: "Iňlis dilinde 'Haýyş' nähili aýdylýar?",
+                options: ["Please", "Sorry", "Yes", "No"],
+                correct: "Please"
+              },
+              {
+                question: "'Sorry' näme diýmek?",
+                options: ["Bagyšla", "Sag bol", "Hawa", "Salam"],
+                correct: "Bagyšla"
+              },
+              {
+                question: "Iňlis dilinde 'Ýok' nähili aýdylýar?",
+                options: ["No", "Yes", "Maybe", "Please"],
+                correct: "No"
+              }
+            ]
+          },
+          {
+            difficulty: "Orta",
+            questions: [
+              {
+                question: "'Please, come in' näme diýmek?",
+                options: ["Haýyš, gir", "Sag bol", "Hoš gal", "Hawa"],
+                correct: "Haýyš, gir"
+              },
+              {
+                question: "'I’m sorry, I’m late' nähili terjime edilýär?",
+                options: ["Bagyšlaň, giç geldim", "Sag boluň", "Salam", "Hoš galyň"],
+                correct: "Bagyšlaň, giç geldim"
+              },
+              {
+                question: "'Thank you very much' näme diýmek?",
+                options: ["Köp sag bol", "Haýyš", "Hawa", "Bagyšla"],
+                correct: "Köp sag bol"
+              }
+            ]
+          },
+          {
+            difficulty: "Kyn",
+            questions: [
+              {
+                question: "'Can you help me, please?' näme diýmek?",
+                options: ["Maňa kömek edip bilersiňizmi, haýyš?", "Sag boluň", "Salam", "Hoš galyň"],
+                correct: "Maňa kömek edip bilersiňizmi, haýyš?"
+              },
+              {
+                question: "'Excuse me, where is the exit?' nähili terjime edilýär?",
+                options: ["Bagyšlaň, çykyš nirede?", "Haýyš, gir", "Sag bol", "Hawa"],
+                correct: "Bagyšlaň, çykyš nirede?"
+              },
+              {
+                question: "'I appreciate your help' näme diýmek?",
+                options: ["Siziň kömegiňize minnetdar", "Bagyšlaň", "Hoš galyň", "Salam"],
+                correct: "Siziň kömegiňize minnetdar"
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    // Переменные состояния
+    let currentLesson = null;
+    let currentLevel = null;
+    let currentQuestion = 0;
+    let score = parseInt(localStorage.getItem("score")) || 0;
+    let hearts = 3;
+
+    // Элементы DOM
+    const content = document.getElementById("content");
+    const scoreDisplay = document.getElementById("score");
+    const levelDisplay = document.getElementById("level");
+    const progressBar = document.getElementById("progress-bar");
+    const heartsDisplay = document.getElementById("hearts").children;
+
+    // Обновление очков, уровня и прогресс-бара
+    function updateScore() {
+      scoreDisplay.textContent = `Ballar: ${score} XP`;
+      const level = Math.floor(score / 100) + 1;
+      const progress = score % 100;
+      levelDisplay.textContent = `Dereje: ${level}`;
+      progressBar.style.width = `${progress}%`;
+      localStorage.setItem("score", score);
+    }
+
+    // Обновление отображения жизней
+    function updateHearts() {
+      for (let i = 0; i < heartsDisplay.length; i++) {
+        heartsDisplay[i].classList.remove("text-green-500", "text-gray-300");
+        heartsDisplay[i].classList.add(i < hearts ? "text-green-500" : "text-gray-300");
+      }
+    }
+
+    // Отображение списка уроков
+    function showLessons() {
+      content.innerHTML = lessons
+        .map(
+          (lesson) =>
+            `<button class="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 w-full mb-4 transform hover:scale-105 transition-transform duration-200" onclick="showLevels(${lesson.id})">
+              <span class="text-lg font-semibold">${lesson.title}</span>
+            </button>`
+        )
+        .join("");
+    }
+
+    // Отображение уровней сложности (пузырьков)
+    function showLevels(lessonId) {
+      const lesson = lessons.find((lesson) => lesson.id === lessonId);
+      content.innerHTML = `
+        <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">${lesson.title}</h2>
+        <div class="flex justify-center gap-6">
+          ${lesson.levels
+            .map(
+              (level, index) =>
+                `<button class="bubble w-16 h-16 rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold hover:from-green-500 hover:to-green-700 flex items-center justify-center shadow-md" onclick="startLesson(${lessonId}, ${index})">${level.difficulty}</button>`
+            )
+            .join("")}
+        </div>
+      `;
+    }
+
+    // Старт урока с выбранным уровнем сложности
+    function startLesson(lessonId, levelIndex) {
+      currentLesson = lessons.find((lesson) => lesson.id === lessonId);
+      currentLevel = currentLesson.levels[levelIndex];
+      currentQuestion = 0;
+      hearts = 3; // Сброс жизней
+      updateHearts();
+      showQuestion();
+    }
+
+    // Отображение вопроса
+    function showQuestion() {
+      const question = currentLevel.questions[currentQuestion];
+      content.innerHTML = `
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">${currentLesson.title} (${currentLevel.difficulty})</h2>
+        <p class="text-lg mb-6 text-gray-700">${question.question}</p>
+        <div class="grid gap-3">
+          ${question.options
+            .map(
+              (option) =>
+                `<button class="bg-gray-100 p-4 rounded-lg hover:bg-gray-200 text-gray-800 font-medium transition-colors duration-200" onclick="checkAnswer('${option}')">${option}</button>`
+            )
+            .join("")}
+        </div>
+        <p id="feedback" class="mt-4 text-lg hidden"></p>
+      `;
+    }
+
+    // Проверка ответа
+    function checkAnswer(answer) {
+      const feedback = document.getElementById("feedback");
+      const correctAnswer = currentLevel.questions[currentQuestion].correct;
+      if (answer === correctAnswer) {
+        score += 10;
+        feedback.textContent = "Dogry!";
+        feedback.classList.remove("text-green-600", "hidden", "feedback-incorrect");
+        feedback.classList.add("text-green-600", "feedback-correct");
+      } else {
+        hearts -= 1;
+        updateHearts();
+        feedback.textContent = `Ýalňyş. Dogry jogap: "${correctAnswer}".`;
+        feedback.classList.remove("text-green-600", "hidden", "feedback-correct");
+        feedback.classList.add("text-green-600", "feedback-incorrect");
+      }
+      updateScore();
+
+      if (hearts === 0) {
+        setTimeout(() => showNoHearts(), 1000);
+        return;
+      }
+
+      if (currentQuestion + 1 < currentLevel.questions.length) {
+        setTimeout(() => {
+          currentQuestion++;
+          showQuestion();
+        }, 1000);
+      } else {
+        setTimeout(() => showResult(), 1000);
+      }
+    }
+
+    // Показ экрана "Жизни закончились"
+    function showNoHearts() {
+      content.innerHTML = `
+        <div class="text-center">
+          <h2 class="text-2xl font-bold mb-4 text-green-600">Ýürekler gutardy!</h2>
+          <p class="text-lg mb-6 text-gray-700">Siziň ballaryňyz: ${score} XP</p>
+          <button class="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transform hover:scale-105 transition-transform duration-200" onclick="showLessons()">Sapaklara dolan</button>
+        </div>
+      `;
+    }
+
+    // Показ результата урока
+    function showResult() {
+      content.innerHTML = `
+        <div class="text-center">
+          <h2 class="text-2xl font-bold mb-4 text-green-600">Sapak tamamlandy!</h2>
+          <p class="text-lg mb-6 text-gray-700">Siziň ballaryňyz: ${score} XP</p>
+          <button class="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transform hover:scale-105 transition-transform duration-200" onclick="showLessons()">Sapaklara dolan</button>
+        </div>
+      `;
+    }
+
+    // Инициализация
+    updateScore();
+    updateHearts();
+    showLessons();
+  </script>
+</body>
+</html>

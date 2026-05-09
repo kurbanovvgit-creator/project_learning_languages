@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Türkmenistanyň Hökümeti</title>
+<style>
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+color: #fff;
+background: url('turkmenistan.jpg') no-repeat center center fixed;
+background-size: cover;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+header {
+background: rgba(0, 102, 58, 0.8);
+padding: 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.home-btn {
+background: #28a745;
+color: #fff;
+padding: 10px 20px;
+text-decoration: none;
+border-radius: 5px;
+font-weight: bold;
+}
+.home-btn:hover {
+background: #218838;
+}
+.lang-switcher {
+display: flex;
+gap: 10px;
+}
+.lang-switcher a {
+color: #fff;
+text-decoration: none;
+padding: 5px 10px;
+border: 1px solid #fff;
+border-radius: 5px;
+}
+.lang-switcher a:hover {
+background: #fff;
+color: #026e2b;
+}
+.content {
+max-width: 900px;
+margin: 50px auto;
+background: rgba(0, 0, 0, 0.7);
+padding: 30px;
+border-radius: 10px;
+text-align: left;
+}
+h1 {
+font-size: 2.5em;
+text-align: center;
+margin-bottom: 20px;
+}
+h2 {
+font-size: 1.8em;
+margin-top: 30px;
+color: #28a745;
+}
+p, ul {
+line-height: 1.6;
+font-size: 1.1em;
+}
+ul {
+padding-left: 20px;
+}
+footer {
+background: rgba(2, 140, 60, 0.8);
+text-align: center;
+padding: 10px;
+margin-top: auto;
+}
+</style>
+</head>
+<body>
+<header>
+<a href="index.html" class="home-btn" id="home-btn">Baş sahypa</a>
+<div class="lang-switcher">
+<a href="#" onclick="changeLanguage('tk')">TK</a>
+<a href="#" onclick="changeLanguage('ru')">RU</a>
+<a href="#" onclick="changeLanguage('en')">EN</a>
+</div>
+</header>
+
+<div class="content" id="content">
+<h1>Türkmenistanyň Hökümeti</h1>
+<p>Hoş geldiňiz! Bu sahypa Türkmenistanyň hökümeti barada giňişleýin maglumat berýär. Türkmenistan Merkezi Aziýada ýerleşýän we özbaşdaklygy, durnuklylygy we abadançylygy bilen tanalýan döwletdir.</p>
+
+<h2>Hökümetiň gurluşy</h2>
+<p>Türkmenistanyň hökümeti prezidentiň ýolbaşçylygynda iş ýöredýär. Prezident döwletiň we hökümetiň başlygydyr. Hökümetiň esasy wezipeleri kanunlaryň ýerine ýetirilişini üpjün etmek, ykdysady ösüşi goldamak we raýatlaryň abadançylygyny ýokarlandyrmakdan ybaratdyr.</p>
+<ul>
+<li><strong>Prezident:</strong> Döwletiň ýokary wezipesi, kanunlaryň we syýasatlaryň ýerine ýetirilişine gözegçilik edýär.</li>
+<li><strong>Ministrler Kabineti:</strong> Hökümetiň ýerine ýetiriji organy, dürli ministrliklerden ybarat.</li>
+<li><strong>Mejlis:</strong> Türkmenistanyň parlamenti, kanun çykaryjy organ.</li>
+</ul>
+
+<h2>Tarihy maglumat</h2>
+<p>Türkmenistan 1991-nji ýylda özbaşdaklygyny gazandy we şondan bäri öz ýoluny saýlap, ykdysady we syýasy durnuklylygy üpjün etdi. Döwlet neýtrallik syýasatyny alyp barýar we 1995-nji ýylda BMG tarapyndan hemişelik bitaraplyk statusy bilen tanaldy.</p>
+
+<h2>Üstünlikler</h2>
+<p>Türkmenistan tebigy gaz ýataklary bilen dünýäde möhüm orun eýeleýär. Şeýle hem, döwlet infrastruktura, bilim we saglyk ulgamlaryna uly maýa goýum goýýar. Aşgabat ýaly şäherler häzirki zaman binagärligi we abadanlaşdyrylan gurşawy bilen tanalýar.</p>
+</div>
+
+<footer>
+<p>© 2025 Türkmenistanyň Hökümeti</p>
+</footer>
+
+<script>
+const translations = {
+tk: {
+home: "Baş sahypa",
+title: "Türkmenistanyň Hökümeti",
+content: `
+<h1>Türkmenistanyň Hökümeti</h1>
+<p>Hoş geldiňiz! Bu sahypa Türkmenistanyň hökümeti barada giňişleýin maglumat berýär. Türkmenistan Merkezi Aziýada ýerleşýän we özbaşdaklygy, durnuklylygy we abadançylygy bilen tanalýan döwletdir.</p>
+<h2>Hökümetiň gurluşy</h2>
+<p>Türkmenistanyň hökümeti prezidentiň ýolbaşçylygynda iş ýöredýär. Prezident döwletiň we hökümetiň başlygydyr. Hökümetiň esasy wezipeleri kanunlaryň ýerine ýetirilişini üpjün etmek, ykdysady ösüşi goldamak we raýatlaryň abadançylygyny ýokarlandyrmakdan ybaratdyr.</p>
+<ul>
+<li><strong>Prezident:</strong> Döwletiň ýokary wezipesi, kanunlaryň we syýasatlaryň ýerine ýetirilişine gözegçilik edýär.</li>
+<li><strong>Ministrler Kabineti:</strong> Hökümetiň ýerine ýetiriji organy, dürli ministrliklerden ybarat.</li>
+<li><strong>Mejlis:</strong> Türkmenistanyň parlamenti, kanun çykaryjy organ.</li>
+</ul>
+<h2>Taryhy maglumat</h2>
+<p>Türkmenistan 1991-nji ýylda özbaşdaklygyny gazandy we şondan bäri öz ýoluny saýlap, ykdysady we syýasy durnuklylygy üpjün etdi. Döwlet neýtrallik syýasatyny alyp barýar we 1995-nji ýylda BMG tarapyndan hemişelik bitaraplyk statusy bilen tanaldy.</p>
+<h2>Üstünlikler</h2>
+<p>Türkmenistan tebigy gaz ýataklary bilen dünýäde möhüm orun eýeleýär. Şeýle hem, döwlet infrastruktura, bilim we saglyk ulgamlaryna uly maýa goýum goýýar. Aşgabat ýaly şäherler häzirki zaman binagärligi we abadanlaşdyran gurşawy bilen tanalýar.</p>
+`,
+footer: "© 2025 Türkmenistanyň Hökümeti"
+},
+ru: {
+home: "Главная",
+title: "Правительство Туркменистана",
+content: `
+<h1>Правительство Туркменистана</h1>
+<p>Добро пожаловать! Эта страница предоставляет подробную информацию о правительстве Туркменистана. Туркменистан — это государство в Центральной Азии, известное своей независимостью, стабильностью и процветанием.</p>
+<h2>Структура правительства</h2>
+<p>Правительство Туркменистана действует под руководством президента, который является главой государства и правительства. Основные задачи правительства включают обеспечение исполнения законов, поддержку экономического роста и повышение благосостояния граждан.</p>
+<ul>
+<li><strong>Президент:</strong> Высшая должность в государстве, контролирует выполнение законов и политики.</li>
+<li><strong>Кабинет министров:</strong> Исполнительный орган правительства, состоящий из различных министерств.</li>
+<li><strong>Меджлис:</strong> Парламент Туркменистана, законодательный орган.</li>
+</ul>
+<h2>Историческая справка</h2>
+<p>Туркменистан обрел независимость в 1991 году и с тех пор идет своим путем, обеспечивая экономическую и политическую стабильность. Страна придерживается политики нейтралитета и в 1995 году была признана ООН постоянно нейтральным государством.</p>
+<h2>Достижения</h2>
+<p>Туркменистан занимает важное место в мире благодаря своим запасам природного газа. Кроме того, государство инвестирует значительные средства в инфраструктуру, образование и здравоохранение. Такие города, как Ашхабад, славятся современной архитектурой и благоустроенной средой.</p>
+`,
+footer: "© 2025 Правительство Туркменистана"
+},
+en: {
+home: "Home",
+title: "Government of Turkmenistan",
+content: `
+<h1>Government of Turkmenistan</h1>
+<p>Welcome! This page provides detailed information about the Government of Turkmenistan. Turkmenistan is a country in Central Asia known for its independence, stability, and prosperity.</p>
+<h2>Government Structure</h2>
+<p>The Government of Turkmenistan operates under the leadership of the President, who is both the head of state and government. The primary responsibilities of the government include enforcing laws, supporting economic growth, and improving the welfare of citizens.</p>
+<ul>
+<li><strong>President:</strong> The highest office in the state, overseeing the implementation of laws and policies.</li>
+<li><strong>Cabinet of Ministers:</strong> The executive body of the government, comprising various ministries.</li>
+<li><strong>Mejlis:</strong> The Parliament of Turkmenistan, the legislative body.</li>
+</ul>
+<h2>Historical Background</h2>
+<p>Turkmenistan gained independence in 1991 and has since followed its own path, ensuring economic and political stability. The country pursues a policy of neutrality and was recognized by the UN as a permanently neutral state in 1995.</p>
+<h2>Achievements</h2>
+<p>Turkmenistan holds a significant position globally due to its vast natural gas reserves. Additionally, the state invests heavily in infrastructure, education, and healthcare. Cities like Ashgabat are renowned for their modern architecture and well-developed environment.</p>
+`,
+footer: "© 2025 Government of Turkmenistan"
+}
+};
+
+function changeLanguage(lang) {
+document.getElementById("home-btn").textContent = translations[lang].home;
+document.getElementById("content").innerHTML = translations[lang].content;
+document.querySelector("footer p").textContent = translations[lang].footer;
+document.documentElement.lang = lang;
+}
+
+// Set default language to Turkmen
+changeLanguage('tk');
+</script>
+</body>
+</html>

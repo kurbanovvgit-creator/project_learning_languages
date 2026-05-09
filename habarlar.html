@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TurkmenGov News</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body {
+margin: 0;
+padding: 0;
+font-family: 'Roboto', sans-serif;
+color: #333;
+background: linear-gradient(to bottom, #048839, #037739); /* Синий градиент */
+min-height: 100vh;
+}
+.container {
+max-width: 800px;
+margin: 50px auto;
+padding: 20px;
+background: rgba(255, 255, 255, 0.95);
+border-radius: 10px;
+}
+h1 {
+font-family: 'Playfair Display', serif;
+font-size: 2.5rem;
+color: #2c3e50;
+text-align: center;
+margin-bottom: 30px;
+}
+.news-card {
+background: #fff;
+border: 1px solid #ddd;
+border-radius: 5px;
+padding: 15px;
+margin-bottom: 20px;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.news-card h3 {
+font-size: 1.5rem;
+margin-bottom: 10px;
+}
+.btn-home {
+position: fixed;
+top: 20px;
+left: 20px;
+background-color: #ffd700;
+color: #2c3e50;
+font-size: 1rem;
+padding: 10px 20px;
+border: none;
+border-radius: 25px;
+text-transform: uppercase;
+font-weight: bold;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+z-index: 1000;
+}
+.btn-home:hover {
+transform: scale(1.1);
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+.language-switcher {
+position: fixed;
+top: 20px;
+right: 20px;
+}
+.language-switcher select {
+padding: 5px;
+font-size: 1rem;
+border-radius: 5px;
+}
+@media (max-width: 768px) {
+h1 {
+font-size: 2rem;
+}
+.news-card h3 {
+font-size: 1.2rem;
+}
+.btn-home {
+font-size: 0.9rem;
+padding: 8px 15px;
+}
+}
+</style>
+</head>
+<body>
+<!-- <button class="btn btn-home" onclick="scrollToTop()" id="home-button"><a href="index.html">Главsssная</a></button> -->
+<div class="language-switcher">
+<select id="language" onchange="changeLanguage()">
+<option value="ru">Русский</option>
+<option value="tk">Türkmen</option>
+<option value="en">English</option>
+</select>
+</div>
+<div class="container">
+<h1 id="title">Новости правительства Туркменистана</h1>
+<div class="news-card">
+<h3 id="news1-title">Соглашение о поставках газа в Турцию</h3>
+<p id="news1-text">
+11 февраля 2025 года Туркменистан подписал соглашение о поставках газа в Турцию через Иран, укрепляя энергетическое сотрудничество.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news2-title">Встреча президента с иностранными лидерами</h3>
+<p id="news2-text">
+Президент Сердар Бердымухамедов провел переговоры в Ашхабаде, обсудив вопросы двустороннего сотрудничества.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news3-title">Открытие нового культурного центра</h3>
+<p id="news3-text">
+В Ашхабаде открыт новый культурный центр, посвященный туркменскому искусству и традициям.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news4-title">Экономический форум в Туркменистане</h3>
+<p id="news4-text">
+В марте 2025 года в Ашхабаде пройдет международный экономический форум для привлечения инвестиций.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news5-title">Расширение сотрудничества с ООН</h3>
+<p id="news5-text">
+Туркменистан укрепляет партнерство с ООН в области устойчивого развития и экологии.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news6-title">Модернизация транспортной инфраструктуры</h3>
+<p id="news6-text">
+Правительство объявило о запуске проекта по модернизации железных дорог и автомагистралей.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news7-title">Программа поддержки молодежи</h3>
+<p id="news7-text">
+В Туркменистане стартовала новая программа для поддержки молодых специалистов и предпринимателей.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news8-title">Участие в международной выставке</h3>
+<p id="news8-text">
+Делегация Туркменистана представила национальные достижения на международной выставке в Дубае.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news9-title">Развитие возобновляемой энергетики</h3>
+<p id="news9-text">
+Правительство утвердило план по строительству солнечных электростанций в Каракумах.
+</p>
+</div>
+<div class="news-card">
+<h3 id="news10-title">Навруз-2025: национальный праздник</h3>
+<p id="news10-text">
+Правительство объявило о масштабных торжествах по случаю Навруза в марте 2025 года.
+</p>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<script>
+const translations = {
+ru: {
+title: "Новости правительства Туркменистана",
+news1_title: "Соглашение о поставках газа в Турцию",
+news1_text: "11 февраля 2025 года Туркменистан подписал соглашение о поставках газа в Турцию через Иран, укрепляя энергетическое сотрудничество.",
+news2_title: "Встреча президента с иностранными лидерами",
+news2_text: "Президент Сердар Бердымухамедов провел переговоры в Ашхабаде, обсудив вопросы двустороннего сотрудничества.",
+news3_title: "Открытие нового культурного центра",
+news3_text: "В Ашхабаде открыт новый культурный центр, посвященный туркменскому искусству и традициям.",
+news4_title: "Экономический форум в Туркменистане",
+news4_text: "В марте 2025 года в Ашхабаде пройдет международный экономический форум для привлечения инвестиций.",
+news5_title: "Расширение сотрудничества с ООН",
+news5_text: "Туркменистан укрепляет партнерство с ООН в области устойчивого развития и экологии.",
+news6_title: "Модернизация транспортной инфраструктуры",
+news6_text: "Правительство объявило о запуске проекта по модернизации железных дорог и автомагистралей.",
+news7_title: "Программа поддержки молодежи",
+news7_text: "В Туркменистане стартовала новая программа для поддержки молодых специалистов и предпринимателей.",
+news8_title: "Участие в международной выставке",
+news8_text: "Делегация Туркменистана представила национальные достижения на международной выставке в Дубае.",
+news9_title: "Развитие возобновляемой энергетики",
+news9_text: "Правительство утвердило план по строительству солнечных электростанций в Каракумах.",
+news10_title: "Навруз-2025: национальный праздник",
+news10_text: "Правительство объявило о масштабных торжествах по случаю Навруза в марте 2025 года.",
+button: "Главная"
+},
+tk: {
+title: "Türkmenistanyň hökümetiniň habarlary",
+news1_title: "Türkiyä gaz ibermegi barada şertnama",
+news1_text: "2025-nji ýylyň 11-nji fewralynda Türkmenistan Eýran arkaly Türkiyä gaz ibermek barada şertnama gol çekdi, energiýa hyzmatdaşlygyny pugtlandyrdy.",
+news2_title: "Prezidentiň daşary ýurt liderleri bilen duşuşygy",
+news2_text: "Prezident Serdar Berdimuhamedow Aşgabatda gepleşikler geçirdi we iki taraplaýyn hyzmatdaşlyk meselelerini ara alyp maslahatlaşdy.",
+news3_title: "Täze medeni merkez açyldy",
+news3_text: "Aşgabatda türkmen sungatyna we däplerine bagyşlanan täze medeni merkez açyldy.",
+news4_title: "Türkmenistanda ykdysady forum",
+news4_text: "2025-nji ýylyň mart aýynda Aşgabatda maýa goýumlary çekmek üçin halkara ykdysady forum geçiriler.",
+news5_title: "BMG bilen hyzmatdaşlygyň giňeldilmegi",
+news5_text: "Türkmenistan durnukly ösüş we ekologiýa babatda BMG bilen hyzmatdaşlygy pugtalandyryar.",
+news6_title: "Ulag infrastrukturasynyň döwrebaplaşdyrylmagy",
+news6_text: "Hökümet demir ýollaryny we awtoulag ýollaryny döwrebaplaşdyrmak barada taslamany yglan etdi.",
+news7_title: "Ýaşlar üçin goldaw programmasy",
+news7_text: "Türkmenistanda ýaş hünärmenleri we telekeçileri goldamak üçin täze programma başlandy.",
+news8_title: "Halkara sergide gatnaşmak",
+news8_text: "Türkmenistan delegasiýasy Dubayda geçirilen halkara sergide milli üstünlikleri görkezdi.",
+news9_title: "Gaýtadan dikeldilýän energiýanyň ösdürilmegi",
+news9_text: "Hökümet Garagumda gün energiýasy stansiýalaryny gurmagyň planyny tassyk etdi.",
+news10_title: "Nowruz-2025: milli baýram",
+news10_text: "Hökümet 2025-nji ýylyň mart aýynda Nowruz baýramy sebäpli giň gerimli çäreleri yglan etdi.",
+button: "Baş Sahypa"
+},
+en: {
+title: "Turkmenistan Government News",
+news1_title: "Agreement on Gas Supplies to Turkey",
+news1_text: "On February 11, 2025, Turkmenistan signed an agreement to supply gas to Turkey via Iran, strengthening energy cooperation.",
+news2_title: "President's Meeting with Foreign Leaders",
+news2_text: "President Serdar Berdimuhamedov held talks in Ashgabat, discussing bilateral cooperation issues.",
+news3_title: "Opening of a New Cultural Center",
+news3_text: "A new cultural center dedicated to Turkmen art and traditions was opened in Ashgabat.",
+news4_title: "Economic Forum in Turkmenistan",
+news4_text: "In March 2025, Ashgabat will host an international economic forum to attract investments.",
+news5_title: "Expanding Cooperation with the UN",
+news5_text: "Turkmenistan strengthens its partnership with the UN in sustainable development and ecology.",
+news6_title: "Modernization of Transport Infrastructure",
+news6_text: "The government announced the launch of a project to modernize railways and highways.",
+news7_title: "Youth Support Program",
+news7_text: "A new program to support young professionals and entrepreneurs has been launched in Turkmenistan.",
+news8_title: "Participation in an International Exhibition",
+news8_text: "A Turkmenistan delegation showcased national achievements at an international exhibition in Dubai.",
+news9_title: "Development of Renewable Energy",
+news9_text: "The government approved a plan to build solar power plants in the Karakum Desert.",
+news10_title: "Navruz-2025: National Holiday",
+news10_text: "The government announced large-scale celebrations for Navruz in March 2025.",
+button: "Home"
+}
+};
+
+function changeLanguage() {
+const lang = document.getElementById('language').value;
+document.getElementById('title').textContent = translations[lang].title;
+for (let i = 1; i <= 10; i++) {
+document.getElementById(`news${i}-title`).textContent = translations[lang][`news${i}_title`];
+document.getElementById(`news${i}-text`).textContent = translations[lang][`news${i}_text`];
+}
+document.getElementById('home-button').textContent = translations[lang].button;
+}
+
+function scrollToTop() {
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Установить язык по умолчанию
+changeLanguage();
+</script>
+</body>
+</html>

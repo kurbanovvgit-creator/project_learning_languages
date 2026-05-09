@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesi teksta Geçir</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #00913c;
+        }
+        h1 {
+            color: #ffffff;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #006938;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            width: 80%;
+            max-width: 600px;
+            min-height: 100px;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sesi teksta geçir!</h1>
+    <button onclick="startRecognition()">Başla</button>
+    <button onclick="stopRecognition()">Sakla</button>
+    <div id="output">Söziňiz şu ýerde ýazylar...</div>
+
+    <script>
+        let recognition;
+        const output = document.getElementById('output');
+
+        // Check if the browser supports the Web Speech API
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US'; // Set language to English
+            recognition.interimResults = true; // Show interim results
+            recognition.continuous = true; // Keep recording until stopped
+
+            // When speech is recognized
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                output.textContent = transcript || 'No text recognized...';
+            };
+
+            // Handle errors
+            recognition.onerror = function(event) {
+                if (event.error === 'not-allowed') {
+                    output.textContent = 'Microphone access denied. Please allow microphone access in your browser settings and ensure the site is running on HTTPS or localhost.';
+                } else {
+                    output.textContent = 'Error occurred: ' + event.error;
+                }
+            };
+
+            // When recognition ends
+            recognition.onend = function() {
+                output.textContent = output.textContent || 'Recognition stopped.';
+            };
+        } else {
+            output.textContent = 'Your browser does not support Speech Recognition. Try using Chrome or Edge.';
+        }
+
+        // Start recognition
+        function startRecognition() {
+            if (recognition) {
+                // Check microphone permission
+                navigator.permissions.query({ name: 'microphone' }).then(function(result) {
+                    if (result.state === 'granted') {
+                        output.textContent = 'Listening...';
+                        recognition.start();
+                    } else if (result.state === 'prompt') {
+                        output.textContent = 'Please grant microphone access when prompted.';
+                        recognition.start();
+                    } else {
+                        output.textContent = 'Microphone access is denied. Please enable it in your browser settings.';
+                    }
+                }).catch(function() {
+                    output.textContent = 'Unable to check microphone permissions. Ensure the site is running on HTTPS or localhost.';
+                });
+            }
+        }
+
+        // Stop recognition
+        function stopRecognition() {
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionAI - Распознавание объектов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #30dc5e;
+            --primary-light: #09bc74;
+            --secondary: #0a9c00;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --error: #f72585;
+            --warning: #f8961e;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f9fafb;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-light);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .upload-area.active {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .preview-container {
+            position: relative;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        #uploaded-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .results-container {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .result-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .confidence-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            border-radius: 4px;
+        }
+        
+        .model-status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .loading-status {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+        
+        .success-status {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+        
+        .error-status {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--error);
+        }
+        
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            body {
+                padding: 1rem;
+                background: white;
+            }
+        }
+
+        /* Стили для кнопки меню и вкладки */
+        .menu-tab {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background: #ffffff;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .menu-tab.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .btnMenu {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #007bff, #00d4ff);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+        }
+        .btnMenu:hover {
+            background: linear-gradient(45deg, #0056b3, #0096cc);
+            transform: scale(1.1);
+        }
+        .menu-tab button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+        }
+        .menu-tab button:hover {
+            background: var(--secondary);
+        }
+        .close-button {
+            background: #dc3545;
+        }
+        .close-button:hover {
+            background: #c82333;
+        }
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- <button class="btnMenu" onclick="toggleMenuTab()">
+        <svg class="menu-icon" viewBox="0 0 24 24">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+    </button> -->
+    
+    <div id="menu-tab" class="menu-tab">
+        <button><a href="Duo.html">Öwren</a></button>
+        <button>Söziň ýazylyşyny öwren (Audio to Text)</button>
+        <button class="close-button" onclick="toggleMenuTab()">Закрыть</button>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Jisimiň adyny bil!</h1>
+            <p class="subtitle">Emeli aň arkaly jisimiň adyny bilmek</p>
+        </header>
+        <div class="content">
+            <div id="model-status" class="model-status loading-status">
+                <div class="spinner" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></div>
+                <span style="vertical-align: middle; margin-left: 0.5rem;">Emeli aň taýýarlanýar...</span>
+            </div>
+            
+            <div id="upload-area" class="upload-area">
+                <div class="upload-icon">📁</div>
+                <h3>Suraty ýükle ýa-da</h3>
+                <button id="select-btn" class="btn" disabled>
+                    <span>Faýly girizmek</span>
+                </button>
+                <p style="margin-top: 1rem; color: #6b7280;">Rugsat edilen formatlar: JPG, PNG, WEBP</p>
+            </div>
+            
+            <input type="file" id="file-input" accept="image/*">
+            
+            <div id="preview-container" class="preview-container">
+                <img id="uploaded-image" alt="Ýüklenen surat">
+            </div>
+            
+            <div id="loading-container" class="loading-container">
+                <div class="spinner"></div>
+               ativos<h3>Surat barlanylýar...</h3>
+                <p>Emeli aň siziň suratyňyzy barlaýar</p>
+            </div>
+            
+            <div id="results-container" class="results-container">
+                <h2 style="margin-bottom: 1.5rem;">Barlagyň netijesi</h2>
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Элементы интерфейса
+        const modelStatus = document.getElementById('model-status');
+        const uploadArea = document.getElementById('upload-area');
+        const selectBtn = document.getElementById('select-btn');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('preview-container');
+        const imageElement = document.getElementById('uploaded-image');
+        const loadingContainer = document.getElementById('loading-container');
+        const resultsContainer = document.getElementById('results-container');
+        const resultsElement = document.getElementById('results');
+        
+        let model;
+        let isModelLoaded = false;
+        
+        // Функция для переключения вкладки меню
+        function toggleMenuTab() {
+            const tab = document.getElementById('menu-tab');
+            tab.classList.toggle('active');
+        }
+        
+        // Обработчики drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('active');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('active');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('active');
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileUpload(fileInput.files[0]);
+            }
+        });
+        
+        // Обработчик выбора файла
+        selectBtn.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                handleFileUpload(fileInput.files[0]);
+            }
+        });
+        
+        // Загрузка модели
+        async function loadModel() {
+            try {
+                // Динамическая загрузка TensorFlow.js
+                await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js');
+                
+                // Динамическая загрузка MobileNet
+                await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js');
+                
+                // Загрузка самой модели
+                model = await mobilenet.load();
+                
+                // Обновляем статус
+                modelStatus.className = "model-status success-status";
+                modelStatus.innerHTML = '✅ Emeli aň taýýyn!';
+                selectBtn.disabled = false;
+                isModelLoaded = true;
+                
+            } catch (error) {
+                modelStatus.className = "model-status error-status";
+                modelStatus.innerHTML = `❌ Ошибка загрузки модели: ${error.message}`;
+                console.error("Ошибка загрузки модели:", error);
+            }
+        }
+        
+        // Функция для загрузки скриптов
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`Не удалось загрузить скрипт: ${src}`));
+                document.head.appendChild(script);
+            });
+        }
+        
+        // Обработка загруженного файла
+        async function handleFileUpload(file) {
+            if (!isModelLoaded) {
+                showError("Модель еще не загружена. Пожалуйста, подождите...");
+                return;
+            }
+            
+            if (!file.type.match('image.*')) {
+                showError("Пожалуйста, выберите файл изображения");
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = (event) => {
+                // Показываем превью изображения
+                imageElement.src = event.target.result;
+                previewContainer.style.display = 'block';
+                
+                // Скрываем область загрузки
+                uploadArea.style.display = 'none';
+                
+                // Показываем индикатор загрузки
+                loadingContainer.style.display = 'flex';
+                resultsContainer.style.display = 'none';
+                
+                // Когда изображение загружено, начинаем анализ
+                imageElement.onload = async () => {
+                    try {
+                        const predictions = await model.classify(imageElement);
+                        showResults(predictions);
+                    } catch (error) {
+                        showError(`Ошибка при анализе изображения: ${error.message}`);
+                        console.error("Ошибка классификации:", error);
+                    }
+                };
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Показать результаты
+        function showResults(predictions) {
+            loadingContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            
+            let html = '';
+            predictions.forEach(pred => {
+                const percent = Math.round(pred.probability * 100);
+                html += `
+                <div class="result-item">
+                    <div>
+                        <h3>${pred.className}</h3>
+                        <div class="confidence-bar">
+                            <div class="confidence-level" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                    <span style="font-weight: bold; color: var(--primary);">${percent}%</span>
+                </div>
+                `;
+            });
+            
+            resultsElement.innerHTML = html;
+            
+            // Добавляем кнопку для нового анализа
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'btn';
+            resetBtn.innerHTML = '🔄 Проанализировать другое изображение';
+            resetBtn.style.marginTop = '2rem';
+            resetBtn.style.width = '100%';
+            resetBtn.onclick = resetAnalysis;
+            
+            resultsElement.appendChild(resetBtn);
+        }
+        
+        // Показать ошибку
+        function showError(message) {
+            loadingContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            resultsElement.innerHTML = `
+                <div style="background: rgba(247, 37, 133, 0.1); padding: 1rem; border-radius: 8px; color: var(--error);">
+                    <h3>❌ Ошибка</h3>
+                    <p>${message}</p>
+                </div>
+                <button class="btn" onclick="resetAnalysis()" style="margin-top: 1rem; width: 100%;">
+                    Попробовать снова
+                </button>
+            `;
+        }
+        
+        // Сбросить анализ
+        function resetAnalysis() {
+            previewContainer.style.display = 'none';
+            resultsContainer.style.display = 'none';
+            uploadArea.style.display = 'block';
+            fileInput.value = '';
+        }
+        
+        // Начинаем загрузку модели при открытии страницы
+        loadModel();
+        
+        // Делаем функцию доступной глобально для кнопки
+        window.resetAnalysis = resetAnalysis;
+    </script>
+</body>
+</html>

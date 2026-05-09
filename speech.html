@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Text Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(45deg, #a3d9a5, #4caf50);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.5s ease;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 30px 40px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      text-align: center;
+      animation: fadeIn 1s ease-out;
+    }
+
+    textarea, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #4caf50;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    textarea {
+      height: 150px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .correct {
+      color: #4caf50;
+      font-size: 18px;
+      font-weight: bold;
+      animation: slideIn 1s ease-out;
+    }
+
+    .incorrect {
+      color: #f44336;
+      font-size: 18px;
+      font-weight: bold;
+      animation: shake 0.5s ease;
+    }
+
+    .error-word {
+      color: #f44336;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateX(-50px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>English Text Checker</h2>
+
+    <p><strong>Reference text:</strong></p>
+    <p id="reference">The quick brown fox jumps over the lazy dog.</p>
+
+    <textarea id="userInput" rows="4" placeholder="Type the sentence here..."></textarea>
+    <button onclick="checkText()">Check</button>
+
+    <p id="result"></p>
+    <p id="errors"></p>
+  </div>
+
+  <script>
+    function checkText() {
+      const ref = document.getElementById('reference').innerText.trim();
+      const input = document.getElementById('userInput').value.trim();
+
+      const result = document.getElementById('result');
+      const errorsList = document.getElementById('errors');
+      let errorCount = 0;
+      let errorWords = [];
+
+      const refWords = ref.split(' ');
+      const inputWords = input.split(' ');
+
+      for (let i = 0; i < refWords.length; i++) {
+        if (inputWords[i] !== refWords[i]) {
+          errorCount++;
+          errorWords.push(`<span class="error-word">${inputWords[i]}</span> at position ${i + 1}`);
+        }
+      }
+
+      if (errorCount > 0) {
+        result.innerHTML = `❌ Incorrect. Errors found: ${errorCount}`;
+        result.className = "incorrect";
+        errorsList.innerHTML = `The errors are in the following words: <br>${errorWords.join('<br>')}`;
+        errorsList.className = "incorrect";
+      } else {
+        result.innerHTML = "✅ Correct!";
+        result.className = "correct";
+        errorsList.innerHTML = "";
+      }
+    }
+  </script>
+
+</body>
+</html>

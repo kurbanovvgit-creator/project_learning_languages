@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spell Checker</title>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s;
+        }
+        body.dark {
+            background-color: #1a1a1a;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container.dark {
+            background-color: #2d2d2d;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .container.dark h1 {
+            color: #e5e7eb;
+        }
+        p {
+            color: #4b5563;
+            margin-bottom: 16px;
+        }
+        .container.dark p {
+            color: #d1d5db;
+        }
+        textarea {
+            width: 100%;
+            height: 192px;
+            padding: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s, background-color 0.3s, color 0.3s;
+            margin-bottom: 16px;
+            font-size: 1rem;
+            background-color: #fff;
+            color: #1f2937;
+        }
+        .container.dark textarea {
+            border-color: #4b5563;
+            background-color: #3f3f3f;
+            color: #e5e7eb;
+        }
+        textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .container.dark button {
+            background-color: #2563eb;
+        }
+        #result {
+            margin-top: 24px;
+            color: #1f2937;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+        .container.dark #result {
+            color: #e5e7eb;
+        }
+        #grade {
+            margin-top: 16px;
+            font-weight: bold;
+            font-size: 1.125rem;
+            color: #1f2937;
+            transition: color 0.3s;
+        }
+        .container.dark #grade {
+            color: #e5e7eb;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        .theme-toggle:active {
+            transform: scale(0.9);
+        }
+        .theme-toggle.rotate {
+            transform: rotate(90deg);
+        }
+        .error {
+            background-color: rgba(255, 230, 230, 0.5);
+            color: red;
+            text-decoration: underline red wavy;
+            cursor: pointer;
+            animation: pulse 0.3s;
+        }
+        .container.dark .error {
+            background-color: rgba(255, 100, 100, 0.3);
+        }
+        .error:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
+            max-width: 200px;
+            white-space: normal;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <h1>Spell Checker</h1>
+        <p>Enter your English text and click "Check" to find spelling errors and get a grade.</p>
+        <!-- Кнопка переключения темы (иконка замка) -->
+        <svg class="theme-toggle" onclick="toggleTheme()" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4z"/>
+        </svg>
+        <textarea id="inputText" placeholder="Enter your text here..."></textarea>
+        <button onclick="checkSpelling()">Check</button>
+        <div id="result"></div>
+        <div id="grade"></div>
+    </div>
+
+    <script>
+        // Встроенный словарь с добавленным словом "cat" и другими популярными словами
+        const dictionary = [
+            "a", "about", "above", "after", "again", "against", "all", "am", "an", "and",
+            "any", "are", "as", "at", "be", "because", "been", "before", "being", "below",
+            "between", "both", "but", "by", "can", "cannot", "cat", "could", "did", "do",
+            "does", "doing", "down", "during", "each", "few", "for", "from", "further",
+            "had", "has", "have", "having", "he", "her", "here", "hers", "herself", "him",
+            "himself", "his", "how", "i", "if", "in", "into", "is", "it", "its", "itself",
+            "just", "me", "more", "most", "my", "myself", "no", "nor", "not", "now",
+            "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours",
+            "ourselves", "out", "over", "own", "same", "she", "should", "so", "some",
+            "such", "than", "that", "the", "their", "theirs", "them", "themselves",
+            "then", "there", "these", "they", "this", "those", "through", "to", "too",
+            "under", "until", "up", "very", "was", "we", "were", "what", "when", "where",
+            "which", "while", "who", "whom", "why", "with", "would", "you", "your",
+            "yours", "yourself", "yourselves", "able", "about", "accept", "according",
+            "account", "across", "act", "action", "activity", "actually", "add", "address",
+            "administration", "admit", "adult", "affect", "after", "again", "against",
+            "age", "agency", "agent", "ago", "agree", "agreement", "ahead", "air", "all",
+            "allow", "almost", "alone", "along", "already", "also", "although", "always",
+            "american", "among", "amount", "analysis", "and", "animal", "another",
+            "answer", "anyone", "anything", "appear", "apply", "approach", "area",
+            "argue", "arm", "around", "arrive", "art", "article", "artist", "as", "ask",
+            "assume", "at", "attack", "attention", "attorney", "audience", "author",
+            "authority", "available", "avoid", "away", "baby", "back", "bad", "bag",
+            "ball", "bank", "bar", "base", "be", "beat", "beautiful", "because",
+            "become", "bed", "before", "begin", "behavior", "behind", "believe", "benefit",
+            "best", "better", "between", "beyond", "big", "bill", "billion", "bit",
+            "black", "blood", "blue", "board", "body", "book", "born", "both", "box",
+            "boy", "break", "bring", "brother", "budget", "build", "building", "business",
+            "but", "buy", "by", "call", "camera", "campaign", "can", "cancer", "candidate",
+            "capital", "car", "card", "care", "career", "carry", "case", "catch", "cause",
+            "cell", "center", "century", "central", "certain", "certainly", "chair",
+            "challenge", "chance", "change", "character", "charge", "check", "child",
+            "choice", "choose", "church", "citizen", "city", "civil", "claim", "class",
+            "clear", "clearly", "close", "coach", "cold", "collection", "college",
+            "color", "come", "commercial", "common", "community", "company", "compare",
+            "computer", "concern", "condition", "conference", "congress", "consider",
+            "consumer", "contain", "continue", "control", "cost", "could", "country",
+            "couple", "course", "court", "cover", "create", "crime", "cultural", "culture",
+            "cup", "current", "customer", "cut", "dark", "data", "daughter", "day",
+            "dead", "deal", "death", "debate", "decade", "decide", "decision", "deep",
+            "defense", "degree", "democrat", "democratic", "describe", "design", "despite",
+            "detail", "determine", "develop", "development", "die", "difference",
+            "different", "difficult", "dinner", "direction", "director", "discover",
+            "discuss", "discussion", "disease", "do", "doctor", "dog", "door", "down",
+            "draw", "dream", "drive", "drop", "drug", "during", "each", "early", "east",
+            "easy", "eat", "economic", "economy", "edge", "education", "effect", "effort",
+            "eight", "either", "election", "else", "employee", "end", "energy", "enjoy",
+            "enough", "enter", "entire", "environment", "environmental", "especially",
+            "establish", "even", "evening", "event", "ever", "every", "everybody",
+            "everyone", "everything", "evidence", "exactly", "example", "executive",
+            "exist", "expect", "experience", "expert", "explain", "eye", "face", "fact",
+            "factor", "fail", "fall", "family", "far", "fast", "father", "fear", "federal",
+            "feel", "feeling", "few", "field", "fight", "figure", "fill", "film", "final",
+            "finally", "financial", "find", "fine", "finger", "finish", "fire", "firm",
+            "first", "fish", "five", "floor", "fly", "focus", "follow", "food", "foot",
+            "for", "force", "foreign", "forget", "form", "former", "forward", "four",
+            "free", "friend", "from", "front", "full", "fund", "future", "game", "garden",
+            "gas", "general", "generation", "get", "girl", "give", "glass", "go", "goal",
+            "good", "government", "great", "green", "ground", "group", "grow", "growth",
+            "guess", "gun", "guy", "hair", "half", "hand", "hang", "happen", "happy",
+            "hard", "have", "he", "head", "health", "hear", "heart", "heat", "heavy",
+            "help", "her", "here", "herself", "high", "him", "himself", "his", "history",
+            "hit", "hold", "home", "hope", "hospital", "hot", "hotel", "hour", "house",
+            "how", "however", "huge", "human", "hundred", "husband", "i", "idea",
+            "identify", "if", "image", "imagine", "impact", "important", "improve",
+            "in", "include", "including", "increase", "indeed", "individual", "industry",
+            "information", "inside", "instead", "institution", "interest", "interesting",
+            "international", "interview", "into", "investment", "involve", "issue", "it",
+            "item", "its", "itself", "job", "join", "just", "keep", "key", "kid", "kill",
+            "kind", "kitchen", "know", "knowledge", "land", "language", "large", "last",
+            "late", "later", "laugh", "law", "lawyer", "lay", "lead", "leader", "learn",
+            "least", "leave", "left", "leg", "legal", "less", "let", "letter", "level",
+            "lie", "life", "light", "like", "likely", "line", "list", "listen", "little",
+            "live", "local", "long", "look", "lose", "loss", "lot", "love", "low", "machine",
+            "magazine", "main", "maintain", "major", "majority", "make", "man", "manage",
+            "management", "manager", "many", "market", "marriage", "material", "matter",
+            "may", "maybe", "me", "mean", "measure", "media", "medical", "meet", "meeting",
+            "member", "memory", "mention", "message", "method", "middle", "might",
+            "military", "million", "mind", "minute", "miss", "mission", "model", "modern",
+            "moment", "money", "month", "more", "morning", "most", "mother", "mouth",
+            "move", "movement", "movie", "much", "music", "must", "my", "myself", "name",
+            "nation", "national", "natural", "nature", "near", "nearly", "necessary",
+            "need", "network", "never", "new", "news", "newspaper", "next", "nice",
+            "night", "no", "none", "nor", "north", "not", "note", "nothing", "notice",
+            "now", "number", "occur", "of", "off", "offer", "office", "officer",
+            "official", "often", "oh", "oil", "ok", "old", "on", "once", "one", "only",
+            "onto", "open", "operation", "opportunity", "option", "or", "order",
+            "organization", "other", "others", "our", "out", "outside", "over", "own",
+            "owner", "page", "pain", "painting", "paper", "parent", "part", "participant",
+            "particular", "particularly", "partner", "party", "pass", "past", "patient",
+            "pattern", "pay", "peace", "people", "per", "perform", "performance",
+            "perhaps", "period", "person", "personal", "phone", "physical", "pick",
+            "picture", "piece", "place", "plan", "plant", "play", "player", "point",
+            "police", "policy", "political", "politics", "poor", "popular", "population",
+            "position", "positive", "possible", "power", "practice", "prepare", "present",
+            "president", "pressure", "pretty", "prevent", "price", "private", "probably",
+            "problem", "process", "produce", "product", "production", "professional",
+            "professor", "program", "project", "property", "protect", "prove", "provide",
+            "public", "pull", "purpose", "push", "put", "quality", "question", "quickly",
+            "quite", "race", "radio", "raise", "range", "rate", "rather", "reach", "read",
+            "ready", "real", "reality", "realize", "really", "reason", "receive", "recent",
+            "recently", "recognize", "record", "red", "reduce", "reflect", "region",
+            "relate", "relationship", "religious", "remain", "remember", "remove", "report",
+            "represent", "republican", "require", "research", "resource", "respond",
+            "response", "responsibility", "rest", "result", "return", "reveal", "rich",
+            "right", "rise", "risk", "road", "rock", "role", "room", "rule", "run",
+            "safe", "same", "save", "say", "scene", "school", "science", "scientist",
+            "score", "sea", "season", "seat", "second", "section", "security", "see",
+            "seek", "seem", "sell", "send", "senior", "sense", "series", "serious",
+            "serve", "service", "set", "seven", "several", "shake", "share", "she",
+            "shoot", "short", "shot", "should", "shoulder", "show", "side", "sign",
+            "significant", "similar", "simple", "simply", "since", "sing", "single",
+            "sister", "sit", "site", "situation", "six", "size", "skill", "skin",
+            "small", "smile", "so", "social", "society", "soldier", "some", "somebody",
+            "someone", "something", "sometimes", "son", "song", "soon", "sort", "sound",
+            "source", "south", "southern", "space", "speak", "special", "specific",
+            "speech", "spend", "sport", "spring", "staff", "stage", "stand", "standard",
+            "star", "start", "state", "statement", "station", "stay", "step", "still",
+            "stock", "stop", "store", "story", "strategy", "street", "strong", "structure",
+            "student", "study", "stuff", "style", "subject", "success", "successful",
+            "such", "suddenly", "suffer", "suggest", "summer", "support", "sure", "surface",
+            "system", "table", "take", "talk", "task", "tax", "teach", "teacher", "team",
+            "technology", "television", "tell", "ten", "tend", "term", "test", "than",
+            "thank", "that", "the", "their", "them", "themselves", "then", "theory",
+            "there", "these", "they", "thing", "think", "third", "this", "those",
+            "though", "thought", "thousand", "threat", "three", "through", "throughout",
+            "throw", "thus", "time", "to", "today", "together", "tonight", "too", "top",
+            "total", "tough", "toward", "town", "trade", "traditional", "training",
+            "travel", "treat", "treatment", "tree", "trial", "trip", "trouble", "true",
+            "truth", "try", "turn", "tv", "two", "type", "under", "understand", "unit",
+            "until", "up", "upon", "us", "use", "usual", "usually", "value", "various",
+            "very", "victim", "view", "violence", "visit", "voice", "vote", "wait",
+            "walk", "wall", "want", "war", "watch", "water", "way", "we", "weapon",
+            "wear", "week", "weight", "well", "west", "western", "what", "whatever",
+            "when", "where", "whether", "which", "while", "white", "who", "whole",
+            "whom", "whose", "why", "wide", "wife", "will", "win", "wind", "window",
+            "wish", "with", "within", "without", "woman", "wonder", "word", "work",
+            "worker", "world", "worry", "would", "write", "writer", "wrong", "yard",
+            "yeah", "year", "yes", "yet", "you", "young", "your", "yourself"
+        ];
+
+        // Функция переключения темы
+        function toggleTheme() {
+            const body = document.body;
+            const container = document.querySelector('.container');
+            const themeToggle = document.querySelector('.theme-toggle');
+            body.classList.toggle('dark');
+            container.classList.toggle('dark');
+            themeToggle.classList.toggle('rotate');
+            // Изменяем цвет иконки замка в зависимости от темы
+            themeToggle.setAttribute('stroke', body.classList.contains('dark') ? '#e5e7eb' : '#1f2937');
+        }
+
+        // Функция проверки орфографии
+        function checkSpelling() {
+            const text = document.getElementById('inputText').value;
+            const resultDiv = document.getElementById('result');
+            const gradeDiv = document.getElementById('grade');
+
+            // Проверка на пустой ввод
+            if (!text.trim()) {
+                resultDiv.innerHTML = 'Please enter some text.';
+                gradeDiv.innerHTML = '';
+                return;
+            }
+
+            // Разбиваем текст на слова
+            const words = text.split(/\s+/);
+            let correctedText = text;
+            let errorCount = 0;
+            const errors = [];
+
+            // Проверяем каждое слово
+            let currentIndex = 0;
+            const wordRegex = /\b\w+\b/g;
+            let match;
+            while ((match = wordRegex.exec(text)) !== null) {
+                const word = match[0].toLowerCase();
+                const start = match.index;
+                const end = start + word.length;
+
+                // Если слово отсутствует в словаре, помечаем как ошибку
+                if (!dictionary.includes(word)) {
+                    errors.push({ word: match[0], start, end });
+                }
+            }
+
+            // Если есть ошибки, подсвечиваем их
+            if (errors.length > 0) {
+                // Сортируем ошибки по позиции (от конца к началу, чтобы не сбивать индексы)
+                errors.sort((a, b) => b.start - a.start);
+
+                // Подсвечиваем ошибки красным
+                for (const error of errors) {
+                    correctedText = correctedText.substring(0, error.start) +
+                        `<span class="error" data-tooltip="Possible spelling error">${error.word}</span>` +
+                        correctedText.substring(error.end);
+                    errorCount++;
+                }
+
+                // Выводим текст с подсвеченными ошибками
+                resultDiv.innerHTML = correctedText;
+
+                // Рассчитываем оценку
+                const totalWords = words.length;
+                const errorRatio = errorCount / totalWords;
+                let grade;
+
+                if (errorRatio === 0) {
+                    grade = 5;
+                } else if (errorRatio < 0.05) {
+                    grade = 4;
+                } else if (errorRatio < 0.15) {
+                    grade = 3;
+                } else {
+                    grade = 2;
+                }
+
+                gradeDiv.innerHTML = `Grade: ${grade} (Errors found: ${errorCount})`;
+            } else {
+                resultDiv.innerHTML = 'No errors found!';
+                gradeDiv.innerHTML = 'Grade: 5';
+            }
+        }
+    </script>
+</body>
+</html>

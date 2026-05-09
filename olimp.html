@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olimpiada</title>
+<style>
+:root {
+--primary: #058e23;
+--secondary: #06d525b7;
+--background: linear-gradient(135deg, #1e7244 0%, #2a5298 100%);
+}
+
+body {
+margin: 0;
+font-family: 'Arial', sans-serif;
+background: var(--background);
+min-height: 100vh;
+color: #333;
+}
+
+.lang-bar {
+padding: 15px;
+background: rgba(0, 171, 11, 0.664);
+text-align: right;
+backdrop-filter: blur(5px);
+}
+
+.lang-btn {
+padding: 8px 20px;
+margin: 0 5px;
+border: none;
+border-radius: 20px;
+cursor: pointer;
+background: rgba(255, 255, 255, 0.1);
+color: white;
+transition: all 0.3s;
+}
+
+.lang-btn.active {
+background: var(--secondary);
+}
+
+.search-container {
+max-width: 800px;
+margin: 40px auto;
+padding: 0 20px;
+}
+
+#search {
+width: 100%;
+padding: 15px 25px;
+border: none;
+border-radius: 30px;
+font-size: 16px;
+background: rgba(255, 255, 255, 0.95);
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 25px;
+}
+
+.card {
+background: rgba(255, 255, 255, 0.97);
+border-radius: 15px;
+padding: 20px;
+box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+transition: transform 0.3s;
+}
+
+.card:hover {
+transform: translateY(-5px);
+}
+
+.status {
+display: inline-block;
+padding: 5px 15px;
+border-radius: 15px;
+font-size: 0.9em;
+margin-bottom: 10px;
+}
+
+.current { background: #27ae60; color: white; }
+.upcoming { background: #f1c40f; color: black; }
+.past { background: #e74c3c; color: white; }
+</style>
+</head>
+<body>
+<div class="lang-bar">
+<button class="lang-btn" data-lang="tk">TM</button>
+<button class="lang-btn" data-lang="ru">RU</button>
+<button class="lang-btn" data-lang="en">EN</button>
+</div>
+
+<div class="search-container">
+<input type="text" id="search" placeholder="Gözle...">
+</div>
+
+<div class="container" id="olympiadContainer"></div>
+
+<script>
+// Обновленные данные с 8 олимпиадами
+const olympiads = [
+{
+id: 1,
+status: 'current',
+date: '2024-04-25',
+tm: { title: "Himiýa Olimpiadasy", desc: "Himiýa boýunça halkara bäsleşik", location: "Aşgabat" },
+ru: { title: "Химическая Олимпиада", desc: "Международные соревнования по химии", location: "Ашхабад" },
+en: { title: "Chemistry Olympiad", desc: "International Chemistry Competition", location: "Ashgabat" }
+},
+{
+id: 2,
+status: 'upcoming',
+date: '2024-06-15',
+tm: { title: "Fizika Olimpiadasy", desc: "Fizikanyň teoriýa we amaly", location: "Mary" },
+ru: { title: "Физическая Олимпиада", desc: "Теоретические и практические задания", location: "Мары" },
+en: { title: "Physics Olympiad", desc: "Theoretical and practical tasks", location: "Mary" }
+},
+{
+id: 3,
+status: 'past',
+date: '2023-11-10',
+tm: { title: "Matematika Olimpiadasy", desc: "Hasaplamalar we logika", location: "Daşoguz" },
+ru: { title: "Математическая Олимпиада", desc: "Вычисления и логические задачи", location: "Дашогуз" },
+en: { title: "Mathematics Olympiad", desc: "Calculations and logic problems", location: "Dashoguz" }
+},
+{
+id: 4,
+status: 'upcoming',
+date: '2024-09-01',
+tm: { title: "Biologiýa Olimpiadasy", desc: "Jandarlar we ösümlikler", location: "Türkmenabat" },
+ru: { title: "Биологическая Олимпиада", desc: "Животные и растения", location: "Туркменабат" },
+en: { title: "Biology Olympiad", desc: "Animals and plants", location: "Turkmenabat" }
+},
+{
+id: 5,
+status: 'current',
+date: '2024-04-28',
+tm: { title: "Informatika Olimpiadasy", desc: "Programmirleme we algoritmler", location: "Aşgabat" },
+ru: { title: "Олимпиада по информатике", desc: "Программирование и алгоритмы", location: "Ашхабад" },
+en: { title: "Computer Science Olympiad", desc: "Programming and algorithms", location: "Ashgabat" }
+},
+{
+id: 6,
+status: 'past',
+date: '2023-08-15',
+tm: { title: "Geografiýa Olimpiadasy", desc: "Dünýäniň geografik görnüşi", location: "Balkanabat" },
+ru: { title: "Географическая Олимпиада", desc: "Географические особенности мира", location: "Балканабад" },
+en: { title: "Geography Olympiad", desc: "World geographical features", location: "Balkanabat" }
+}
+];
+
+const translations = {
+tk: {
+searchPlaceholder: "Olimpiadany gözle...",
+current: "Häzirki",
+upcoming: "Täze",
+past: "Öten",
+location: "Ýer",
+date: "Sene"
+},
+ru: {
+searchPlaceholder: "Поиск олимпиад...",
+current: "Текущие",
+upcoming: "Предстоящие",
+past: "Прошедшие",
+location: "Место",
+date: "Дата"
+},
+en: {
+searchPlaceholder: "Search olympiads...",
+current: "Current",
+upcoming: "Upcoming",
+past: "Past",
+location: "Location",
+date: "Date"
+}
+};
+
+let currentLang = 'tk';
+
+function renderOlympiads(searchTerm = '') {
+const container = document.getElementById('olympiadContainer');
+const filtered = olympiads.filter(olympiad => {
+const text = Object.values(olympiad[currentLang]).join(' ').toLowerCase();
+return text.includes(searchTerm.toLowerCase());
+});
+
+container.innerHTML = filtered.map(olympiad => `
+<div class="card">
+<div class="status ${olympiad.status}">
+${translations[currentLang][olympiad.status]}
+</div>
+<h2>${olympiad[currentLang].title}</h2>
+<p>${olympiad[currentLang].desc}</p>
+<div class="details">
+<p><strong>${translations[currentLang].location}:</strong> ${olympiad[currentLang].location}</p>
+<p><strong>${translations[currentLang].date}:</strong> ${new Date(olympiad.date).toLocaleDateString(currentLang)}</p>
+</div>
+</div>
+`).join('');
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+currentLang = btn.dataset.lang;
+document.documentElement.lang = currentLang;
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+document.getElementById('search').placeholder = translations[currentLang].searchPlaceholder;
+renderOlympiads();
+localStorage.setItem('olympiadLang', currentLang);
+});
+});
+
+document.getElementById('search').addEventListener('input', (e) => {
+renderOlympiads(e.target.value);
+});
+
+// Инициализация
+const savedLang = localStorage.getItem('olympiadLang') || 'tk';
+document.querySelector(`[data-lang="${savedLang}"]`).click();
+</script>
+</body>
+</html>
